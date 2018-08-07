@@ -23,9 +23,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 		MimeMessage msg = javaMailSender.createMimeMessage();
 		MimeMessageHelper msgHelper = new MimeMessageHelper(msg);
 		try {
+			msgHelper.setFrom(systemMail);
 			msgHelper.setTo(to);
 			msgHelper.setSubject(subject);
-			msgHelper.setText(htmlText);
+			msgHelper.setText(htmlText,true);
 		} catch (MessagingException e) {
 			throw new AccountEmailException("发送失败");
 		}
