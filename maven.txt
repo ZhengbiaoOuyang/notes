@@ -109,7 +109,7 @@ mailingLists ： 项目的邮件列表信息
 properties ： 自定义的 maven 属性
 dependencies ： 项目的依赖配置
 dependencyManagement ： 项目的依赖管理配置
-repositories ： 项目的出库配置
+repositories ： 项目的仓库配置
 build ： 项目的源码目录、输出目录、插件配置、插件管理配置等
 reporting ： 项目报告输出目录，项目报告配置
 
