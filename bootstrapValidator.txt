@@ -1,0 +1,46 @@
+$("#submitBtn").click(function () {
+	        	var $form = $('#form');
+	        	
+	        	var validator = $('#form').data('bootstrapValidator');
+	        	
+				// 设置字段supPriceBO.supPrice.supCode的验证状态为未验证，然后验证
+				// validator.updateStatus('supPriceBO.supPrice.supCode', 'NOT_VALIDATED',null).validateField('supPriceBO.supPrice.supCode');
+	        	// 重置表单的验证状态，（将隐藏所有错误提示）
+				// validator.resetForm();
+				validator.validate();
+	        	
+                if (validator.isValid()) {
+                	$("#submitBtn").attr("disabled","disabled");
+                	$form.attr("action","saveAndStart.html");
+                	$form.ajaxSubmit(options);
+                }
+	        });    
+			 
+	        $('#form').bootstrapValidator({
+	            message: 'This value is not valid',
+	            //live: 'submitted',
+	            group: '.col-xs-3',
+	            feedbackIcons: {
+	                valid: 'glyphicon glyphicon-ok',
+	                invalid: 'glyphicon glyphicon-remove',
+	                validating: 'glyphicon glyphicon-refresh'
+	            },
+	            //submitButtons:'[type="button"]',
+	            fields: {
+	            	'supPriceBO.supPrice.type': {
+	                    message: '类型不能为空',
+	                    
+	                    validators: {
+	                        notEmpty: {
+	                        }
+	                    }
+	                },
+	                'supPriceBO.supPrice.supCode':{
+	                    message: '请选择供应商',
+	                    validators: {
+	                        notEmpty: {
+	                        }
+	                    }
+	                }
+	            }
+	            }); 

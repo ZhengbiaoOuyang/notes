@@ -1,0 +1,294 @@
+用户biao,root,testuser1,testuser2
+-rwx------ 1 root  root  4365 Sep 19 23:20  the_root.data
+chgrp   修改属于哪个组
+chown   修改拥有者
+cd /tmp                   <==切换工作目录到/tmp
+mkdir testing             <==建立新目录
+chmod 744 testing         <==变更权限
+touch testing/testing     <==建立空的文件
+chmod 600 testing/testing <==变更权限
+
+.  ：代表当前的目录，也可以使用 ./ 来表示；
+.. ：代表上一层目录，也可以 ../ 来代表。
+
+cd：变换目录
+pwd：显示目前的目录
+mkdir：创建一个新的目录
+rmdir：删除一个空的目录
+
+分时操作系统 Compatible Time-Sharing System CTSS
+
+man -f man 列出包含man的命令
+man -k man 列出命令说明中包含man的命令
+
+2.文件与目录管理
+
+复制、删除与移动： cp, rm, mv
+cp：
+-a  ：相当於 -pdr 的意思，至於 pdr 请参考下列说明；(常用)
+-d  ：若来源档为连结档的属性(link file)，则复制连结档属性而非文件本身；
+-f  ：为强制(force)的意思，若目标文件已经存在且无法开启，则移除后再尝试一次；
+-l  ：进行硬式连结(hard link)的连结档创建，而非复制文件本身；
+-p  ：连同文件的属性一起复制过去，而非使用默认属性(备份常用)；
+-r  ：递归持续复制，用於目录的复制行为；(常用)
+cp 复制连接档的时候复制的是原始文件
+
+basename,dirname
+
+3. 文件内容查阅
+cat (concatenate)
+cat  由第一行开始显示文件内容
+tac  从最后一行开始显示，可以看出 tac 是 cat 的倒著写！
+nl   显示的时候，顺道输出行号！
+more 一页一页的显示文件内容
+less 与 more 类似，但是比 more 更好的是，他可以往前翻页！
+head 只看头几行
+tail 只看尾巴几行
+od   以二进位的方式读取文件内容！
+
+modification time (mtime)：当该文件的『内容数据』变更时，就会升级这个时间！
+status time (ctime)：当该文件的『状态 (status)』改变时，就会升级这个时间
+access time (atime)：
+ls -l /etc/man.config
+ls -l --time=atime /etc/man.config
+ls -l --time=ctime /etc/man.config
+
+touch 创建文件
+
+chown dmtsai:users ~dmtsai/bashrc   修改bashrc的所有者为users组的dmtsai
+
+文件默认权限：umask  数字表示要拿掉的权限
+
+chattr +i attrtest
++i 无法删除修改新增
++a 只能增加数据，无法删除修改
+chattr (配置文件隐藏属性)
+lsattr (显示文件隐藏属性)
+
+4. 文件与目录的默认权限与隐藏权限
+观察文件类型：file
+
+5. 命令与文件的搜寻：
+which 查找命令位置
+whereis locate find 查找文件，find在硬盘中查找，whereis locate在数据库查找
+updatedb：根据 /etc/updatedb.conf 的配置去搜寻系统硬盘内的档名，并升级 /var/lib/mlocate 内的数据库文件；
+locate：依据 /var/lib/mlocate 内的数据库记载，找出使用者输入的关键字档名。
+
++4代表大於等於5天前的档名：ex> find /var -mtime +4
+-4代表小於等於4天内的文件档名：ex> find /var -mtime -4
+4则是代表4-5那一天的文件档名：ex> find /var -mtime 4
+
+groupadd project        <==添加新的群组
+useradd -G project alex <==创建 alex 帐号，且支持 project
+useradd -G project arod <==创建 arod 帐号，且支持 project
+
+第八章、Linux 磁盘与文件系统管理
+ln /etc/crontab .   <==创建实体链接的命令
+ln -s /etc/crontab crontab2 创建一个符号链接
+
+3. 磁盘的分割、格式化、检验与挂载
+
+    fdisk
+    df
+    mkfs -t ext3 /dev/hdc6  格式化为ext3
+    fsck 检查文件系统
+    mount /dev/hdc6 /mnt/hdc6 将刚刚创建的 /dev/hdc6 挂载到 /mnt/hdc6 上面
+2. Linux 系统常见的压缩命令
+    gzip,bzip2
+    tar 打包    
+    zcat 显示解压缩后的内容
+    gzip -v man.config 压缩
+    gzip -d man.config.gz 解压缩
+    gzip -9 -c man.config > man.config.gz 用最佳的压缩比压缩，并保留原本的文件
+    bzip2 
+    gzip选项与参数：
+        -c  ：将压缩的数据输出到萤幕上，可透过数据流重导向来处理；
+        -d  ：解压缩的参数；
+        -t  ：可以用来检验一个压缩档的一致性～看看文件有无错误；
+        -v  ：可以显示出原文件/压缩文件的压缩比等资讯；
+        -#  ：压缩等级，-1 最快，但是压缩比最差、-9 最慢，但是压缩比最好！默认是 -6
+3. 打包命令: tar
+    压　缩：tar -jcv -f filename.tar.bz2 要被压缩的文件或目录名称
+    查　询：tar -jtv -f filename.tar.bz2
+    解压缩：tar -jxv -f filename.tar.bz2 -C 欲解压缩的目录     
+
+    bzip2选项与参数：
+        -c  ：创建打包文件，可搭配 -v 来察看过程中被打包的档名(filename)
+        -t  ：察看打包文件的内容含有哪些档名，重点在察看『档名』就是了；
+        -x  ：解打包或解压缩的功能，可以搭配 -C (大写) 在特定目录解开
+            特别留意的是， -c, -t, -x 不可同时出现在一串命令列中。
+        -j  ：透过 bzip2 的支持进行压缩/解压缩：此时档名最好为 *.tar.bz2
+        -z  ：透过 gzip  的支持进行压缩/解压缩：此时档名最好为 *.tar.gz
+        -v  ：在压缩/解压缩的过程中，将正在处理的档名显示出来！
+        -f filename：-f 后面要立刻接要被处理的档名！建议 -f 单独写一个选项罗！
+        -C 目录    ：这个选项用在解压缩，若要在特定目录解压缩，可以使用这个选项。
+
+    tar选项与参数：
+        -c  ：创建打包文件，可搭配 -v 来察看过程中被打包的档名(filename)
+        -t  ：察看打包文件的内容含有哪些档名，重点在察看『档名』就是了；
+        -x  ：解打包或解压缩的功能，可以搭配 -C (大写) 在特定目录解开
+            特别留意的是， -c, -t, -x 不可同时出现在一串命令列中。
+        -j  ：透过 bzip2 的支持进行压缩/解压缩：此时档名最好为 *.tar.bz2
+        -z  ：透过 gzip  的支持进行压缩/解压缩：此时档名最好为 *.tar.gz
+        -v  ：在压缩/解压缩的过程中，将正在处理的档名显示出来！
+        -f filename：-f 后面要立刻接要被处理的档名！建议 -f 单独写一个选项罗！
+        -C 目录    ：这个选项用在解压缩，若要在特定目录解压缩，可以使用这个选项。
+
+        其他后续练习会使用到的选项介绍：
+        -p  ：保留备份数据的原本权限与属性，常用於备份(-c)重要的配置档
+        -P  ：保留绝对路径，亦即允许备份数据中含有根目录存在之意；
+        --exclude=FILE：在压缩的过程中，不要将 FILE 打包！
+        其他后续练习会使用到的选项介绍：
+        -p  ：保留备份数据的原本权限与属性，常用於备份(-c)重要的配置档
+        -P  ：保留绝对路径，亦即允许备份数据中含有根目录存在之意；
+        --exclude=FILE：在压缩的过程中，不要将 FILE 打包！
+
+2. vi 的使用     
+
+显示变量
+echo ${PATH}
+echo $myname    如果有此变量，则显示值，否则声明一个变量
+myname=VBird    给这个变量赋值
+echo $myname
+
+双引号内的特殊字符如 $ 等，可以保有原本的特性，如下所示：
+『var="lang is $LANG"』则『echo $var』可得『lang is en_US』
+单引号内的特殊字符则仅为一般字符 (纯文本)，如下所示：
+『var='lang is $LANG'』则『echo $var』可得『lang is $LANG』
+『export var』若该变量需要在其他子程序运行，则需要以 export 来使变量变成环境变量：
+『version=$(uname -r)』再『echo $version』可得『2.6.18-128.el5』，变量中使用命令
+取消变量的方法为使用 unset
+
+标准输入　　(stdin) ：代码为 0 ，使用 < 或 << ；
+标准输出　　(stdout)：代码为 1 ，使用 > 或 >> ； 
+标准错误输出(stderr)：代码为 2 ，使用 2> 或 2>> ；
+find /home -name .bashrc > list_right 2> list_error 正确消息放入right,错误消息放入error
+find /home -name .bashrc &> list 或 find /home -name .bashrc > list 2>&1
+
+ls -al /etc | less 信息太多时使用，可以翻页
+echo $PATH | cut -d ':' -f 3,5 将每一行用:分隔取第三个和五个
+export | cut -c 12-
+
+last | cut -d ' ' -f 1 只显示用户名
+last | grep 'root'  取出 包含root的行
+last | grep -v 'root' 取出不包含root的行
+
+cat /etc/passwd | sort -t ':' -k 3  以：分割且以第三列排序
+last | cut -d ' ' -f1 | sort | uniq 去掉重复显示的
+last | cut -d ' ' -f1 | sort | uniq -c 去重并统计次数
+
+last | tee last.list | cut -d " " -f1   数据同时输出到屏幕和文件
+ls -l / | tee -a ~/homefile | more      数据同时输出到屏幕和累加到文件
+last | tr '[a-z]' '[A-Z]' 小写变大写
+cat /etc/passwd | tr -d ':' 删除冒号
+
+dmesg | grep -n -A3 -B2 --color=auto 'eth' 显示包含eth的行并且前三行后后2行业显示
+
+nl /etc/passwd | sed '2,5d' 删除第二至五行
+nl /etc/passwd | sed '2a drink tea' 在第二行后添加 'drink tea'
+nl /etc/passwd | sed '2i drink tea' 在第二行前添加 'drink tea'
+nl /etc/passwd | sed '2,5c No 2-5 number' 二至五行取代为 No 2-5 number
+
+/sbin/ifconfig eth0 | grep 'inet addr' | sed 's/^.*addr://g'    搜索行首到*addr:并将其替换为空
+sed -i 's/\.$/\!/g' regular_express.txt 直接修改文件，把行尾的.替换成！
+
+2. 简单的 shell script 练习
+    read -p "Please input your first name: " firstname  # 提示使用者输入并保存到变量firsname中
+    filename=${fileuser:-"filename"}   fileuser未设定或为空 filename取"-"后面的值;否则filename=$fileuser
+    filename=${fileuser-"filename"}    fileuser 变量未设定，filename取"-"后面的值;否则filename=$fileuser
+    [ "$yn" == "Y" -o "$yn" == "y" ] && echo "OK, continue" && exit 0 中括号内是布尔表达式，括号内前后必须有空格
+    
+    case in :
+    case $1 in
+    "hello")
+        echo "Hello, how are you ?"
+        ;;
+    "")
+        echo "You MUST input parameters, ex> {$0 someword}"
+        ;;
+    *)   # 其实就相当於万用字节，0~无穷多个任意字节之意！
+        echo "Usage $0 {hello}"
+        ;;
+    esac
+
+    循环：
+    while [ condition ]  <==中括号内的状态就是判断式
+    do            <==do 是回圈的开始！
+        程序段落
+    done 
+
+    until [ condition ]
+    do
+        程序段落
+    done
+
+    判断：
+    if [continue] ; then
+        code...
+    elif [continue] ; then
+        code...
+    else
+        code...
+    fi
+
+
+工作管理
+        kill -l
+        选项与参数：
+        -l  ：这个是 L 的小写，列出目前 kill 能够使用的讯号 (signal) 有哪些？
+        signal ：代表给予后面接的那个工作什么样的指示罗！用 man 7 signal 可知：
+        -1 ：重新读取一次参数的配置档 (类似 reload)；
+        -2 ：代表与由键盘输入 [ctrl]-c 同样的动作；
+        -9 ：立刻强制删除一个工作；
+        -15：以正常的程序方式终止一项工作。与 -9 是不一样的。
+    Ctrl + z 暂停
+    jobs -l 查看暂停的程序
+    fg %1 将jobnumber为1的程序拿到前台
+    bg %1 运行jobnumber为1的后台程序
+    kill -9 %2; jobs    杀死2
+    killall -1 syslogd  杀死syslogd
+
+
+    ps aux  <==观察系统所有的程序数据
+    ps -lA  <==也是能够观察所有系统的数据
+    ps axjf <==连同部分程序树状态
+    选项与参数：
+    -A  ：所有的 process 均显示出来，与 -e 具有同样的效用；
+    -a  ：不与 terminal 有关的所有 process ；
+    -u  ：有效使用者 (effective user) 相关的 process ；
+    x   ：通常与 a 这个参数一起使用，可列出较完整资讯。
+    输出格式规划：
+    l   ：较长、较详细的将该 PID 的的资讯列出；
+    j   ：工作的格式 (jobs format)
+    -f  ：做一个更为完整的输出。
+
+    ps -l 自己 bash 程序
+    ps aux 所有系统运行的程序
+
+
+    netstat -[atunlp]
+    选项与参数：
+    -a  ：将目前系统上所有的连线、监听、Socket 数据都列出来
+    -t  ：列出 tcp 网络封包的数据
+    -u  ：列出 udp 网络封包的数据
+    -n  ：不以程序的服务名称，以埠号 (port number) 来显示；
+    -l  ：列出目前正在网络监听 (listen) 的服务；
+    -p  ：列出该网络服务的程序 PID 
+
+
+    rpm -qf /usr/bin/setup 查看/usr/bin/setup属于哪个包
+
+
+RPM 安装 (install)
+    rpm -ivh package_name
+    rpm -ivh a.i386.rpm b.i386.rpm *.rpm // 一口气安装两个以上的软件
+    rpm -ivh http://website.name/path/pkgname.rpm   //直接由网络上面的某个文件安装，以网址来安装
+    -Uvh 升级或安装
+    -Fvh 升级
+
+    选项与参数：
+    -i ：install 的意思
+    -v ：察看更细部的安装资讯画面
+    -h ：以安装资讯列显示安装进度
+
+systemctl restart httpd.service   重启服务    

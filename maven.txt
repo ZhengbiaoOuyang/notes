@@ -1,0 +1,52 @@
+可选依赖不被传递<optional>true</optional>
+排除依赖依赖不被传递<exclusions><exclusion>被排除的依赖</exclusion></exclusions>，只需<groupid>与<artifactId>
+mvn dependency:list 已解释依赖
+mvn dependency:tree 依赖树
+mvn dependency:analyze 分析，可以查看未声明的和未使用的依赖
+
+添加远程仓库
+
+	<repositories>
+		<repository>
+			<id>jboss</id>
+			<name>JBoss Repository</name>
+			<url>http://repository.jboss.com/manen2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+镜像：为中央仓库配置镜像，所以对中央仓库的请求都会转至镜像
+
+私服：所有的所有的远程仓库请求都会转至 http://192.168.1.100/manen2
+<mirrors>
+    <mirror>
+        <id>internal-repository</id>
+        <name>Internal Repository Manager</name>
+        <url>http://192.168.1.100/manen2</url>
+        <mirrorOf>*</mirrorOf>
+    </mirror>
+</mirrors>
+<mirrorOf>*</mirrorOf> 匹配所有远程仓库
+<mirrorOf>exinternal:*</mirrorOf> 匹配所有远程仓库，使用 localhost 的除外，使用 file:// 协议的除外
+<mirrorOf>repo1,repo2</mirrorOf> 匹配 repo1 和 repo2
+<mirrorOf>*,!repo1</mirrorOf> 匹配所有远程仓库 , repo1 除外，使用感叹号将仓库从匹配中排除
+
+
+clean 生命周期 pre-clean clean post-clean
+default
+site
+生命周期，打包类型 jar ，如下:
+
+process-resources           maven-resources-plugin:resources            复制主资源文件至主输出目录
+compile                     maven-compiler-plugin:compile               编译主代码至主输出目录
+process-test-resources      maven-resources-plugin:testResources        复制测试资源文件至测试输出目录
+test-compile                maven-compiler-plugin:testCompile           编译测试代码至测试输出目录
+test                        maven-surefire-plugin:test                  执行测试用例
+package                     maven-jar-plugin:jar                        创建项目 jar 包
+install                     maven-install-plugin:install                将项目输出构建安装包本地出库
+deploy                      maven-deploy-plugin:deploy                  将项目输出构建部署到远程仓库
+
