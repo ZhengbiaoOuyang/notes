@@ -1,0 +1,498 @@
+
+Number("123dd")     //NaN
+Number("")          //0
+Number(true)        //1
+
+parseInt("123dd")   //123
+parseInt("")        //NaN
+parseInt(true)      //NaN
+
+parseInt 与 parseFloat 的区别是 parseFloat 只解析十进制
+parseFloat("3.125e7") //31250000
+
+任何对象都有toString(), Number 的 toString方法可以有参数，参数是基数 var num = 10 ; num.toString(2) // 1010
+
+String(true)    //"true"
+String(null)    //"null"
+String(undefined)   //"undefined"
+
+Object 实例有以下属性或方法
+o.Constructor
+o.hasOwnProperty(propertyName)    检测自身是否有属性 propertyName 不包含原型中的属性
+o.isPrototypeOf(object)     检测 object 是否是 o 的原型
+o.propertyIsEnumerable(propertyName) 检测 propertyName 是否可以使用 for-in
+o.valueOf()
+Object.getPrototypeOf(o)    // 获取o的[[__proto__]]值
+
+前置递加使用递加后的值，后置递加使用原始值
+            var num = true ;
+            var num1 = true;
+            console.log(num++);     // 1
+            console.log(num);       // 2
+
+            console.log(++num1);    // 2
+            console.log(num1);      // 2
+对象使用++,则调用对象的valueOf()后再++   
+
+一元加/减（+/-）用于对象时调用对象的valueOf()或toString()，若同时有这两个方法则调用valueOf().然后转为数字
+一元加/减（+/-）用于数字时同 Number(). - 表示相反数 var n = -1 ; -n = 1 ;
+
+&& 和 || 不会转换 NaN null undefined 为布尔值
+
+undefined == 0 // false
+null == 0 // false
+true == 1 // true
+true == 2 // false
+false == 0 // true
+第4章
+    var property = "aa";
+    var o = {property}; // 此对象包含一个名为 property 的属性，值为"aa"
+    o.property // "aa"  
+第5章
+    Array
+    Array.isArray(arr)
+    转换方法：
+    arr.valueOf() 
+    arr.toString() 会调用每个项的toString()
+    arr.join() // var arr = ["red","blue","green"]; arr.join("||") // red||blue||green
+    栈方法：
+    arr.push(o)   推入栈顶
+    arr.pop()     弹出
+    队列方法：
+    arr.push(o)     
+    arr.shift() 移除队首的一个元素
+    反向队列：
+    arr.unshift() 队首添加若干元素
+    arr.pop()
+    arr.reverse() 反转数组
+    arr.sort() 无参方法将对每一项调用 toString() 然后按照字符串排序
+    arr.sort(compare) compare(o1,o2) 
+    操作方法：
+    arr.concat(arr1) 创建 arr 的副本并连接 arr1 然后返回
+    arr.slice(index1,index2) 创建 arr 索引为 [index2,index2) 元素的副本并返回，若 index < 0 则使用 index + arr.length 确定位置
+    arr.splice(index,num,item1,.....,itemX) 在 index 处删除 num 项 并添加 item1...
+    位置：
+    arr.indexOf(item , index)  从 index 处顺序查找 item 的位置
+    arr.lastIndexOf(item , index) 从 index 处逆序查找 item 的位置
+    迭代方法：
+    arr.every(func) 返回布尔值，对所有项执行 func 方法返回true则返回true
+    arr.some(func)  返回布尔值，任意一项执行 func 方法返回true则返回true
+    arr.filter(func) 返回执行func返回true的项的集合
+    arr.forEach(func) 每一项执行func无返回
+    arr.map(func) 返回func的返回值集合
+    缩小方法：
+    arr.reduce(func,init) init 为空则默认为 arr[0] ，从第二项开始每一项调用func，否则从第一项开始。func的返回值会成为下一次调用的init
+        func(init,item,arr)
+    arr.reduceRight() 从右开始
+
+    Date.now() 当前时间
+
+    RegExp
+    /[bc]at/i 与 new RegExp("[bc]at","i") 等价 . g 全局，i 忽略大小写，m 多行
+    
+    RegExp.exec(); RegExp.test()    全局模式调用 exec() 会从上次开始匹配，非全局模式则重新开始匹配
+    例：
+    var text = "mom and dad and baby";
+    var pattern = /mom (and dad (and baby)?)?/g;
+    var matches = pattern.exec(text);
+    console.log(matches.index); // 0                        匹配到的位置
+    console.log(matches.input); // mom and dad and baby     text 原始字符串
+    console.log(matches[0]);    // mom and dad and baby     匹配到的字符
+    console.log(matches[1]);    // and dad and baby         捕获组
+    console.log(matches[2]);    // and baby                 捕获组
+
+    exec() 和 test() 执行后 RegExp 可以获得更多信息
+    例：
+    var text = "this has been a short summer";
+    var pattern = /(.)hort/g;
+    if (pattern.test(text)){
+        console.log(RegExp.input);          // 原始字符串                    this has been a short summer
+        console.log(RegExp.leftContext);    // 返回匹配到的字符串之前的字符窜  this has been a 
+        console.log(RegExp.rightContext);   // 返回匹配到的字符串之后的字符窜   summer
+        console.log(RegExp.lastMatch);      // 返回最近匹配的字符即 short     short
+        console.log(RegExp.lastParen);      // 返回最近一次匹配到的组 即 s     s
+        console.log(RegExp.$1);             // 第一个捕获组
+        console.log(RegExp.$2);             // 第二个
+    }
+
+    Function
+    所有的函数都是 Function 类型的实例，函数是对象，函数名是指针
+    arguments.callee 属性指向拥有该 arguments 对象的函数
+    arguments.caller 指向调用该函数的函数的引用，在全局中调用指向 null
+    this 指向函数的执行环境对象，全局中指向 window o.say()中的 this 指向 o
+    func.length 显式参数的数量
+    func.apply(this,arguments) 由 this 对象调用 func 方法 arguments 是参数，可以是 arguments 对象也可以是数组.指定 func 的执行环境对象为 this 对象
+    func.call(this,num,num1) 
+    func1 = func.bind(o) 将 func 搬定到 o 上，在任何地方调用 func1 func1 的执行环境对象都是 o
+    num.toFixed(2) 保留 2 位小数
+    num.toExponential(1) 指数形式，1 是小娄位数
+
+    String 
+    str.slice(startIndex,endIndex) 
+    str.substring(startIndex,endIndex)
+    str.substr(startIndex,num)  num 是要返回的字符个数
+    str.charAt(index)
+    str.indexOf(s,index)    从 index 处开始查找 s 
+    str.lastIndexOf()
+    str.toLowerCase()
+    str.toUpperCase()
+    str.match(pattern) 与 pattern.exec(str) 相同，返回 matches
+    str.search(pattern) 返回 index
+    str.replace(pattern,text) 把匹配到的字符替换为 text 
+    str.replace(pattern,func) func 对每一个匹配项执行操作
+    例：
+    function htmlEscape(text){
+        return text.replace(/[<>]/g,function(match,pos,originalText){
+            switch(match){
+                case "<" : return "&lt;";
+                case ">" : return "&gt;";
+            }
+        });
+    }
+    console.log(htmlEscape("< p >"));   // &lt; p &gt;
+
+    str.split(arg,size) arg 是分隔符或 RegExp 对象 ，返回数组.size 可选，限定返回数组的大小。
+    str.localeCompare(s) 比较字符串，返回1，-1，0
+    str.charCodeAt(index) 返回 Unicode 编码，是一个数字
+    String.fromCharCode(104,101,108,108,111) // "hello" 接收字符编码，转换成字符 
+
+    全局对象：
+    encodeURI() 替换空格等特殊字符 encodeURI(http://www.baidu.com/a b.txt) 中的空格会替换为 %20
+    encodeURIComponent() 替换非标准字符如 / : 空格等
+    decodeURI()
+    decodeURIComponent()
+
+    Math.max(3.54.32.16) //54 
+    var values = [3.54.32.16] ; Math.max.apply(Math,values); //54
+    Math.min()
+    Math.ceil()     // 向上 
+    Math.floor()    // 向下    
+    Math.round()    // 四舍五入
+    Math.random()   // 返回(0, 1)之间的随机数
+
+    产生一个 [a,b] 范围内的随机数
+    function selectFrom(lowerValue,upperValue){
+        var choices = upperValue - lowerValue + 1;
+        return Math.floor(Math.random()*choices) + lowerValue;
+    }
+
+    面向对象：
+    Object.defineProperty(obj,propertyName,descriptor)
+    设置访问器属性：
+    var book = {
+        _year:2004,
+        edition:1
+    }
+    Object.defineProperty(book,"year",{
+        get:function(){
+            return this._year;
+        },
+        set:function(value){
+            this.edition++;
+            this._year = value;
+        }
+    });
+    Object.defineProperties()
+    Object.getOwnPropertyDescriptor(o,propertyName)     // 获取属性描述符
+    Object.getPrototypeOf(o)        // 获取 o 的原型对象
+
+    工厂模式创造对象：
+    function creatPerson(name,age,job){
+        var o = new Object();
+        o.name = name;
+        o.age = age;
+        o.job = job;
+        return o;
+    }
+
+    构造函数创造对象：
+    function Person(name ,age ,job){
+        this.name = name;
+        this.age = age;
+        this.job = job;
+        this.sayName = function(){
+            alert(this.name);
+        }
+    }
+    var p = Person("张三",22,"搬砖");
+    console.log(p.constructor == Person); // true
+    console.log(p instanceof Person)    // true
+    console.log(p instanceof Object)    // true
+
+    Object.keys(o)  // 获取 o 的所有可枚举示例
+    for-in          // 遍历对象所有可枚举属性
+    Object.getOwnPropertyNames(o)   // 获取所有 o 可枚举和不可枚举的属性
+
+    组合模式创建对象：构造函数模式+原型模式，构造函数定义示例属性原型模式定义方法和共享属性
+
+    继承：
+    组合继承：（原型链+借用构造函数，最常用）
+    function SuperType(name){
+        this.name = name;
+    }
+    SuperType.prototype.sayName = function(){
+        console.log("SuperType.sayName():"+this.name);
+    }
+    function SubType(name,age){
+        SuperType.apply(this,arguments);    // 继承父类的属性
+        this.age = age;                     // 子类属性
+    }
+    SubType.prototype = new SuperType();    // 继承父类的方法
+    SubType.prototype.constructor = SubType;
+    SubType.prototype.sayAge = function(){  // 子类方法
+        console.log("SubType.sayAge():"+this.age);
+    }
+    
+    var sub = new SubType("zhangsan",23);
+    sub.sayName();  // SuperType.sayName():zhangsan
+    sub.sayAge();   // SubType.sayAge():23
+
+    原型式继承：
+    Object.create(o);   以 o 为原型创建对象
+    function object(o){
+        function F(){}
+        F.prototype = o;
+        return new F();
+    }
+
+    寄生式继承：
+    function creatAnother(original){
+        var clone = object(original);
+        clone.sayHi = function(){
+            alert("Hi");
+        }
+        return clone;
+    }
+
+    寄生组合继承（最理想，最常用）：
+    function object(o){
+        function F(){}
+        F.prototype = o;
+        return new F();
+    }
+    function inheritPrototype(superType,subType){
+        var prototype = object(superType.prototype);
+        prototype.sayAge = function(){
+            console.log("SubType:"+this.age);
+        }
+        prototype.constructor = subType;
+        subType.prototype = prototype;
+    }
+    
+    function SuperType(name){
+        this.name = name;
+        this.colors = ["red","blue","green"];
+    }
+    SuperType.prototype.sayName = function(){
+        console.log("SuperTpye:"+this.name);
+    }
+    function SubType(name,age){
+        SuperType.apply(this,arguments);    // 借用父类构造函数，获得父类属性
+        this.age = age;
+    }
+    inheritPrototype(SuperType,SubType);    // 继承父类原型
+    var sub1 = new SubType("zhangsan",22);
+    var sub2 = new SubType("lisi",44);
+    sub1.sayName();     // SuperTpye:zhangsan
+    sub1.sayAge();      // SubType:22
+    sub2.sayName();     // SuperTpye:lisi
+    sub2.sayAge();      // SubType:44
+
+
+    模块模式：
+    var application = function(){
+        // 私有变量
+        var components = new Array();
+        // 初始化
+        components.push("baseComponent");
+
+        // 公共的
+        return {
+            getConponentCount:function(){
+                return components.length;
+            },
+            registerComponent:function(component){
+                components.push(component);
+            }
+        };
+    }();
+    
+    console.log(application.getConponentCount());   // 1
+    application.registerComponent("c");
+    console.log(application.getConponentCount());   // 2
+
+    window 对象：
+    属性：
+    top         最高层框架
+    parent      父框架
+    frames 
+
+    窗口位置：screenLeft,screenTop 或 screenX,screenY
+    setTimeout(func,millisecond)    超时调用， millisecond 毫秒后调用 func
+    setInterval(func,millisecond)   间歇调用，返回一个 id 用于取消
+    clearInterval(intervalId)       取消
+
+    第十章DOM：
+    操作
+    target.appendChild(node)    把 node 添加到 target 的 childNodes 末尾
+    target.insertBefore(newNode,node)   把 newNode 插入到 node 的前面
+    target.replaceChild(newNode,node);  把 node 替换为 newNode 
+    target.removeChild(node)            移除 node ， node 必须是 target 的子节点
+
+    target.cloneNode(true);             复制节点，true 是深复制，包含子节点，false是浅复制，只复制自身
+
+    document.documentElement    指向 HTML 元素
+    document.body   
+    document.doctype
+    document.title
+    document.domain             文档域
+    document.getElementById
+    document.getElementsByTagName 
+    HTMLCollection.namedItem(name)      
+    document.forms
+    document.images
+    document.anchors    所有带 name 的 <a>
+    document.links      所有带 href 的 <a>
+
+    HTMLElement.getAttribute();
+    HTMLElement.setAttribute(); 
+    HTMLElement.removeAttribute();
+    element.attributes 属性指向元素的属性节点集合
+
+    document.querySelector(selector)    返回与 selector 匹配的第一个元素
+    document.querySelector(selector)    返回与 selector 匹配的所有个元素 NodeList 对象
+
+    ul.classList.add(value);
+    ul.classList.contains()
+    ul.classList.remove()
+    ul.classList.toggle(value)   有就删除，没有就添加
+    document.activeElement  指向了当前获得焦点的元素
+    document.readyState     值为 loading 时文档正在加载，值为 complete 时，文档已加载完毕
+    ele.dataset.myname      获取自定义属性 myname 的值
+    ele.innerHTML  将被解析为dom树
+    ele.insertAdjacentHTML(before,obj);   
+    before:
+    beforebegin 作为同辈元素将obj插入ele前
+    afterbegin  将obj插入firstChild前
+    beforeend   将obj插入lastChild后
+    afterend    作为同辈元素将obj插入ele后
+
+    ul.scrollIntoView();  // 将视野移动到ul处
+
+    遍历 DOM 树：
+    var iterator = document.createNodeIterator(document.body,NodeFilter.SHOW_ELEMENT,function(node){
+                return node.tagName.toLowerCase() == "p"?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_SKIP;
+            },false);
+    var node = iterator.nextNode();
+    while(node !== null){
+        console.log(node.tagName);
+        node = iterator.nextNode();
+    }
+    第四个参数表示是否扩展实体， HTML 中不支持
+    TreeWalker 遍历，参数同上
+
+    第十三章：事件
+    element.addEventListener(eventType,handler,false)   添加事件处理程序，可以添加多个，按添加的顺序执行
+    element.removeEventListener(eventType,handler,false)
+
+    event.eventPhase    事件阶段值为1时是捕获，2处于目标，3冒泡
+    stopImmediatePropagation()  取消事件的捕获或冒泡，并阻止任何事件处理程序的调用
+    stopPropagation()   取消事件的捕获或冒泡,自身的其他事件处理程序还是会被调用
+    event.target        触发事件的目标
+    event.currentTarget 注册事件的对象，比如ul注册了click事件处理程序，点击li,event.currentTarget指向ul，event.target指向li
+    event.type          事件类型
+    event.preventDefault()  取消事件的默认行为，比如阻止链接跳转、表单提交
+    mouseout            鼠标从元素上移出
+    mouseover           鼠标移入元素
+
+    div1和div2相邻，鼠标从div1移入div2，div1触发mouseout事件，div2触发mouseover事件，他们互为相关元素，event.relatedTarget
+    dom0级事件js添加的事件会覆盖HTML上的事件，最后添加的事件有效
+    dom2级事件，按事件添加的顺序依次触发
+    dom0优先dom2触发
+    事件委托，提高效率
+
+    取消鼠标右键菜单
+    document.oncontextmenu = function(){
+        console.log(this);
+        return false;
+    }
+
+    阻止表单提交，返回false
+    document.forms[0].onsubmit = function(event){
+        event.stopImmediatePropagation();
+        return false;
+    }
+
+    input 和 textArea 的 select() 可以选中文本
+    select 事件： 文本选中变蓝的时候触发
+    剪切板事件
+    beforecopy  复制前
+    beforepaste 粘贴前
+    beforecut   剪切前
+    copy        复制时
+    paste       
+    cut        
+
+    forms.checkValidity()   检查所有表单字段是否有效
+    novalidate（form的属性）  禁用验证
+    formnovalidate（提交按钮的属性） 此按钮提交不验证
+
+    第15章Canvas：
+    var canvas = document.getElementById("drawing");
+    var context = canvas.getContext("2d");
+    context.fillStyle = "#ff0000";          // 设置矩形的填充颜色 
+    context.fillRect(10,10,20,20);          // 矩形
+
+    context.strokeStyle = "rgba(0,0,255,0.5)"   // 描边颜色，0.5是透明度
+    context.strokeRect(30,30,20,20);            // 绘制矩形
+
+    context.clearRect(40,40,10,10);     // 清除一个矩形区域
+    context.arc(x,y,radius,startAngle,endAngle,countclockwise)  x,y 圆心，radius是半径，startAngle起始弧度，endAngle结束弧度，counterclockwise是否
+    逆时针，false为顺时针，弧度三点中方向是0弧度
+    context.translate(100,100);     // 原点移动到100,100
+    context.retate(angle)           // 绕原点旋转 angle 弧度
+
+
+    JSON:
+    JSON.stringify(book);       调用book的toJSON方法
+    JSON.stringify(book,["key1","key2"])    只包含key1和key2
+    JSON.stringify(book,null,4)             缩进4个，最多10
+    JSON.stringify(book,func)   func 是过滤器 fun(key,value){return value} return undefined 则忽略属性
+
+    JSON.parse(book,func)       func 是还原函数 fun(key,value)   返回undefined的键将被忽略
+    XMLHttpRequest  如果是同步，会等到服务器返回再往下执行
+    xhr.open("get","example.php",false) 
+    xhr.send(null)  发送请求
+    xhr.onreadystatechange = function(){
+        if (xhr.readyState == 4){   //  完成。已接收到全部数据
+            if (xhr.state >= 200 && xhr.state <= 300 || xhr == 304){
+                // 成功
+            }else{
+                // 失败
+            }
+        }
+    }
+
+    xhr.send(new FormData(form))    
+
+    为函数绑定执行环境
+    function bind(fn,context){
+        return function(){
+            return fn.apply(context,arguments);
+        }
+    }
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+

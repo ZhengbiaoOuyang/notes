@@ -1,0 +1,118 @@
+可选依赖不被传递<optional>true</optional>
+排除依赖依赖不被传递<exclusions><exclusion>被排除的依赖</exclusion></exclusions>，只需<groupid>与<artifactId>
+mvn dependency:list 已解释依赖
+mvn dependency:tree 依赖树
+mvn dependency:analyze 分析，可以查看未声明的和未使用的依赖
+
+添加远程仓库
+
+	<repositories>
+		<repository>
+			<id>jboss</id>
+			<name>JBoss Repository</name>
+			<url>http://repository.jboss.com/manen2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+镜像：为中央仓库配置镜像，所以对中央仓库的请求都会转至镜像
+
+私服：所有的所有的远程仓库请求都会转至 http://192.168.1.100/manen2
+<mirrors>
+    <mirror>
+        <id>internal-repository</id>
+        <name>Internal Repository Manager</name>
+        <url>http://192.168.1.100/manen2</url>
+        <mirrorOf>*</mirrorOf>
+    </mirror>
+</mirrors>
+<mirrorOf>*</mirrorOf> 匹配所有远程仓库
+<mirrorOf>exinternal:*</mirrorOf> 匹配所有远程仓库，使用 localhost 的除外，使用 file:// 协议的除外
+<mirrorOf>repo1,repo2</mirrorOf> 匹配 repo1 和 repo2
+<mirrorOf>*,!repo1</mirrorOf> 匹配所有远程仓库 , repo1 除外，使用感叹号将仓库从匹配中排除
+
+
+clean 生命周期 ： pre-clean clean post-clean
+default
+site
+default 生命周期 ：
+    validate
+    initialize
+    generate-sources
+    process-sources     处理项目主资源文件。一般来说是对 src/main/resources 目录内容进行变量替换等操作后复制到项目主输出目录 classpath 中
+    generate-resources
+    process-resources
+    compile             编译源码。编译 src/main/java 目录下 java 文件至项目输出的 classpath 中
+    process-classes
+    generate-test-sources
+    process-test-sources 处理项目测试资源文件。对  src/main/resources 目录内容进行变量替换等操作后复制到测试 classpath 目录中
+    generate-test-resources
+    process-test-resources
+    test-compile        编译项目的测试代码。将 src/main/jar 目录下 java 文件编译至项目测试 classpath 中
+    process-test-classes
+    test                测试
+    prepare-package
+    package             打包成发布的格式，如jar 、 war
+    pre-integration-test 
+    integration-test
+    post-integration
+    verify
+    install             将包安装到本地仓库
+    deploy              将最终的包安装到远程仓库
+
+生命周期，打包类型 jar ，如下:
+process-resources           maven-resources-plugin:resources            复制主资源文件至主输出目录
+compile                     maven-compiler-plugin:compile               编译主代码至主输出目录
+process-test-resources      maven-resources-plugin:testResources        复制测试资源文件至测试输出目录
+test-compile                maven-compiler-plugin:testCompile           编译测试代码至测试输出目录
+test                        maven-surefire-plugin:test                  执行测试用例
+package                     maven-jar-plugin:jar                        创建项目 jar 包
+install                     maven-install-plugin:install                将项目输出构建安装包本地出库
+deploy                      maven-deploy-plugin:deploy                  将项目输出构建部署到远程仓库
+
+mvn install -Dmaven.test.skip=true      跳过 test 阶段
+
+// 以下为 maven 默认的插件远程仓库配置
+<pluginRepositories>
+    <pluginRepository>
+        <id>central</id>
+        <name>Central Repository</name>
+        <url>https://repo.maven.apache.org/maven2</url>
+        <layout>default</layout>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <releases>
+            <updatePolicy>never</updatePolicy>
+        </releases>
+    </pluginRepository>
+</pluginRepositories>
+
+maven 可继承属性:
+groupId :  项目组 Id 
+version :  项目版本
+description : 项目描述
+organization : 项目的组织信息
+inceptionYear : 项目的创始年份
+url
+developers ： 项目的开发者信息
+contributes ： 项目的贡献者信息
+distributionManagement ：项目的部署配置
+issueManagement ： 项目的缺陷跟踪系统信息
+ciManagement ： 项目的持续集成系统信息
+scm ： 项目的版本控制系统信息
+mailingLists ： 项目的邮件列表信息
+properties ： 自定义的 maven 属性
+dependencies ： 项目的依赖配置
+dependencyManagement ： 项目的依赖管理配置
+repositories ： 项目的仓库配置
+build ： 项目的源码目录、输出目录、插件配置、插件管理配置等
+reporting ： 项目报告输出目录，项目报告配置
+
+
+
+

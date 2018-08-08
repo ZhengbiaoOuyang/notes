@@ -1,0 +1,32 @@
+String.format 格式化日期和数字
+System.out.println(String.format("time:%1$tY-%1$tm-%1$td %1$tH:%1$tm:%1$tS,", new Date()));
+System.out.println(String.format("$%(,.2f", 1555666.1254D));
+
+SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+String format = dateFormat.format(new Date());  // 2018-05-07 15:44:10
+
+select to_char(sysdate,'yyyy-MM-dd HH24:mi:SS') from dual;
+
+DecimalFormat df =  new DecimalFormat("#,##0.00");
+System.out.println(df.format(44429123.568D));         //44,429,123.57
+
+Calendar  cal = Calendar.getInstance();
+		int year = cal.get(Calendar.YEAR);          //年
+		int month = cal.get(Calendar.MONTH);        //月
+
+
+发送邮件
+spring-context-support.jar
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+		
+		MimeMessage msg = javaMailSender.createMimeMessage();
+		MimeMessageHelper msgHelper = new MimeMessageHelper(msg);
+		try {
+			msgHelper.setFrom(systemMail);
+			msgHelper.setTo(to);
+			msgHelper.setSubject(subject);
+			msgHelper.setText(htmlText,true);
+		} catch (MessagingException e) {
+			throw new AccountEmailException("发送失败");
+		}
