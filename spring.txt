@@ -1,0 +1,48 @@
+加入 IOC 容器
+@Component
+@Repository
+@Service
+@Controller
+从 IOC 获取
+@Resource
+
+@Scope("prototype")         // 多例创建
+
+<context:component-scan>    开启注解扫描
+
+<aop:aspectj-autoproxy>     aop 注解自动代理
+
+@Aspect         // 指定一个切面类 
+@Component      // 加入 IOC 容器
+public class Aop{
+
+    // 拦截 UserDao.save();
+
+    // 定义一个公共的切面表达式
+    @Pointcut("execution(* com.biao.UserDao.save(..))")
+    public void test(){
+
+    }
+
+    @Before("test()")   
+    public void begin(){
+        System.out.println("开始事务");
+    }
+
+    @After("execution(* com.biao.UserDao.save(..))")
+    public void commit(){
+        System.out.println("提交事务");
+    }
+}
+@AfterThrowing  // 报错后调用
+"execution(* com.biao.*.save(..))"      // 拦截 com.biao 下的所有方法
+
+切入点表达式
+execution(
+    modifiers-pattern?          拦截到方法的访问修饰符 如public
+    ret-type-pattern            方法的返回类型
+    declaring-type-pattern?     拦截的类型
+    name-pattern(param-pattern) 方法名、形参
+    throws-pattern?             异常
+)
+
