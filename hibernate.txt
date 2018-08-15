@@ -6,4 +6,36 @@ session.load(class,id)  使用哪个属性就去数据库查
 query.list()            全部查询并加入缓存，不会从缓存中获取
 query.iterator()        用到才查询，会从缓存中获取
 
+查询
+    查询一列 返回 List<列类型>  select e.id from Emp 
+    查询多列 返回 List<Object[]> select e.id,e.name from Emp
+    查询指定的列并封装为对象 List<Emp> select new Emp(e.id,e.name) from Emp 必须要有相应的构造函数,否则报错
+
+设置参数
+    占位符： from Emp e where e.id = ? or e.birth = ? 
+    query.setParameter(0,1)
+    query.setParameter(1,new Date())   从0开始
+    命名参数：from Emp e where e.name = :name or e.birth = :birth
+    query.setParameter("name","张三")                          query.setString("name","张三")
+    query.setParameter("birth",new Date())                     query.setDate("birth",new Date())
+
+    连接查询：
+    from Dept d inner join d.emps
+    List<Object[]> list = q.list()   Object 数据中第一个元素是 Dept 第二个是 Emp 。
+
+    迫切内连接，自动封装右表数据到左表中
+    from Dept d inner join fetch d.emps
+    List<Dept> list = q.list()       
+
+Criteria 查询：
+    Criteria criteria = session.createCriteria(Emp.class);
+    criteria.add(Restrictions.idEq(1))  // 根据 id 查
+    criteria.add(Restrictions.eq("empName","张三"))//根据属性 empName 查
+    
+
+
+
+
+
+
 
