@@ -1,0 +1,9 @@
+hibernate学习笔记 			  
+
+session.get(class,id)   立即加载所有属性
+session.load(class,id)  使用哪个属性就去数据库查
+
+query.list()            全部查询并加入缓存，不会从缓存中获取
+query.iterator()        用到才查询，会从缓存中获取
+
+
