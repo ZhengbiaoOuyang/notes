@@ -44,3 +44,10 @@ $("#submitBtn").click(function () {
 	                }
 	            }
 	            }); 
+<div class="validate-group">  <!-- 提示消息显示位置 -->
+	<span class="col-xs-1 control-label">物流公司托运单号</span>
+	<div class="col-xs-3">
+		<s:textfield key="supSendBO.supSend.logisticsNo" size="25"
+			cssClass='form-control' />
+	</div>
+</div>
