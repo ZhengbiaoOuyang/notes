@@ -1,0 +1,412 @@
+Spring 容器： AnnotationConfigApplicationContext
+
+声明 Bean 的注解
+    @Component
+    @Service
+    @Repository
+    @Controller
+注入 Bean 的注解
+    @Autowired
+    @Inject
+    @Resource
+
+定时任务 
+    @Scheduled 声明的方法将定时执行
+
+配置类注解
+    @Configuration                      // 声明当前类是一个配置类， 相当于 Spring 的 xml 配置文件
+    @ComponentScan("biao.com")         // 自动扫描并注册到 Spring 容器中
+
+JavaConfig
+    @Bean
+	public UseService useService() {
+		UseService useService = new UseService();
+		useService.setFuncService(funcService());     // 注入属性
+		return useService;
+	}
+
+    将 useService 注册到容器中
+
+@PropertySource(value = {"classpath:test.properties"})     指明 properties 文件的位置，在 JavaConfig 类上使用
+@ConfigurationProperties(prefix = "mail")    将 properties 属性和一个 Bean 关联,可写在与 @Bean 一起使用，也可以写在类上
+@EnableConfigurationProperties(MailProperties.class)  用在配置类上将 MailProperties 放入容器
+
+@Import		导入具体的 JavaConfig
+			导入实现 ImportSelector 接口的类 ImportSelector 有 selectImpots
+
+以 jar 包独立运行
+内嵌 servlet 容器
+使用 starter 简化 maven 配置
+自动配置 Spring 
+
+spring-boot-starter-parent      SpringBoot 父级依赖
+
+@RestController     控制器类
+@SpringBootApplication  SpringBoot 入口类，开启自动配置
+
+@SpringBootApplication
+    @Configuration
+    @EnableAutoConfiguration
+    @ComponentScan
+
+关闭特定配置
+    @SpringBootApplication(exclude = {DataSourceAutoConfiguration})    // 使用 Exclude 参数关闭指定配置
+
+SprignBoot 的配置文件
+    src/main/resources/application.yml
+
+    server:
+        port:   9090
+        contextPath:    /localhost
+
+使用 xml 配置文件
+    @ImportResource({"classpath:some-context.xml","classpath:other-context.xml"})
+
+    java -jar xx.jar --server.port=9090
+
+Actuator 监控和管理应用
+
+application.properties
+    book.author=ouyang
+    book.name=spring boot
+
+    @Value("${book.author}")     
+    private String bookAuthor;   // 值为 ouyang
+
+@ConfigurationProperties 使用
+    application.xml
+        author.name = ouyang
+        author.age = 28
+
+    @Component
+    @ConfigurationProperties(prefix="author",locations={"classpath:config/author.properties"})   // 对应的属性将自动映射
+    public class Author{
+        private String name;
+        private int age;
+    }            
+
+Profile 配置
+    application-{profile}.properties
+    application-prod.properties
+    使用： application.properties 中添加 spring.profiles.active=prod 将激活 application.prod.properties
+    
+@Configuration
+@EnableAsync        //  开启异步任务
+@EnableScheduling   //  开启定时器
+public class TaskPoolConfig implements AsyncConfigurer {
+
+	/**
+	 * 使用线程池
+	 */
+	@Override
+	public Executor getAsyncExecutor() {
+		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+		taskExecutor.setCorePoolSize(5);
+		taskExecutor.setMaxPoolSize(10);
+		taskExecutor.setQueueCapacity(25);
+		taskExecutor.initialize();
+		return taskExecutor;
+	}
+
+}
+@Component
+public class TaskService {
+	
+	@Async                          // 异步，使用线程池
+	@Scheduled(fixedRate = 10000)   // 定时任务
+	public void task1() {
+		String name = Thread.currentThread().getName();
+		System.out.println("task1:"+name);
+	}
+	
+	@Async
+	@Scheduled(fixedRate = 10000)
+	public void task2() {
+		String name = Thread.currentThread().getName();
+		System.out.println("task2:"+name);
+	}
+	
+}
+
+@RestController		// 方法不用写 @ResponseBody
+@RequestMapping("/hello")
+public class HelloController {
+	@RequestMapping("/index")
+	public String hello() {
+		System.out.println("index");
+		return "index";
+	}
+	
+	@RequestMapping(value = "/demoPathVar/{str}",produces = "text/plain;charset=UTF-8")
+	public String DemoPathVar(@PathVariable String str) {
+		return str;
+	}
+	
+	@RequestMapping(value = "/obj")
+	public String passObj(User user) {
+		return user.getId() + ":" + user.getName()+"-"+user.getDept().getName();
+	}
+	
+	@RequestMapping(value = "/getUserJson",produces = "application/json;charset=UTF-8") // 返回自动转换成 json
+	public User getUserJson() {
+		User user = new User();
+		Dept dept = new Dept();
+		user.setId(1L);
+		user.setName("张本");
+		dept.setName("研发部");
+		user.setDept(dept);
+		
+		return user;
+	}
+	
+}
+
+拦截器
+
+	拦截器类继承 HandlerInterceptorAdapter 并加入 Spring 容器
+	配置类实现 WebMvcConfigurer 接口，实现 addInterceptors 方法
+
+配置类实现 WebMvcConfigurer 接口，可以配置 SpringMVC
+
+注册 Servlet Filter Listener
+通过 FilterRegistrationBean		ServletRegistrationBean		ListenerRegistrationBean
+
+@ControllerAdvice	全局错误处理
+
+HttpMessageConverter 将 http 请求的参数封装到 Java 对象
+
+MultipartResolver	文件上传
+
+Formatter	Converter 	HttpMessageConverters
+
+
+
+Docker 
+	docker search redis			检索 Redis
+	docker pull redis 			下载镜像
+	docker images				查看本地镜像
+	docker rmi image-id			删除镜像
+	docker rmi $(docker images -q)
+	docker run --name test-redis -d redis	运行一个 Redis 容器
+	docker ps 				查看运行中的容器列表
+	docker ps -a
+	docker stop test-redis      停止 rest-redis 
+	docker start test-redis     开始一个
+	docker run -d -p 6379:6379 --name test-redis redis	// 运行时映射端口
+	docker rm test-redis 		删除实例
+	docker logs test-redis      查看容器日志
+	docker exec -it port-redis bash 					// 进入容器实例
+
+	docker run -d -p 9090:8080 -p 1521:1521 --name oracle wnameless/oracle-xe-11g	
+
+Docker 指令
+	FROM ubuntu				指明了当前镜像指明的基镜像
+	MAINTAINER ouyang   	指明了当前镜像的作者
+	EXPOSE 8080				镜像运行时容器监听的端口
+	ADD	test.txt /mydir/ 	复制当前目录的文件到镜像目录中去
+	ENTRYPOINT ["java","-jar","/app.jar"]	镜像启动时运行 java -jar app.jar
+build Docker 镜像
+在要运行的 jar 包同级目录下创建 Dockerfile 文件， 键入以下代码
+	FROM java:8
+	MAINTAINER ouyangzhengbiao
+	ADD demo-2-jpa-0.0.1-SNAPSHOT.jar app.jar
+	EXPOSE 8080
+	ENTRYPOINT ["java","-jar","/app.jar"]
+docker build -t wisely/mydockerapp . //构建 docker 镜像
+
+Spring Data JPA
+	@Query 查询	为方法绑定一个 HQL
+	@NamedQuery 查询
+
+@RepositoryRestResource(path="emp")				// 暴露为 REST localhost:8080/emp 即可访问， 不加止注解则 localhost:8080/Employees 实体类后面加 s
+public interface EmpRepository extends JpaRepository<Employee, Long> {
+}	
+
+在 application.properties 中配置以下属性可以配置 REST 根路径
+spring.data.rest.base-path=/api
+
+获取用 GET 请求
+提交修改用 POST 请求
+删除用 DELETE 请求
+
+事务
+	@@Transactional
+	propagation 事务行为
+		REQUIRED			在方法 a 中有事务则使用事务，没有事务则新建一个事务，在 a 中调用 b， b也使用和 a 相同的事务， b 报错 a,b 都回滚
+		REQUIRES_NEW		对于 a,b 都新建事务， b 报错只回滚 b 不影响 a
+		NESTED				同 	REQUIRES_NEW , 但支持 JDBC 不支持 JPA 或 Hibernater
+		SUPPORTS			有事务就用事务，没有就不用
+		NOT_SUPPORTED		强制方法不在在事务中执行
+		NEVER				强制方法不在事务中执行，在事务中则报错
+		MANDATORY			强制方法在事务中执行，若无事务则报错
+	isolation  	事务隔离
+		READ_UNCOMMITTED
+		READ_COMMITTED
+		REPEATABLE_READ
+		SERIALIZABLE
+
+
+SpringMVC 错误处理
+	@ExceptionHandler 
+	实现 HandlerExceptionResolver 接口
+	使用 @ControllerAdvice + @ExceptionHandler 注解
+
+SpringSecurity
+	@Configuration
+	public class SecurityConfig extends WebSecurityConfigurerAdapter	//起用认证
+
+	BCryptPasswordEncoder.encode(rawPassword) 加密	，内部使用 BCrypt 加密	
+
+关闭模板缓存
+Spring.thymeleaf.cache=false
+Spring.freemark.cache=false
+
+SpringBoot 热部署
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+		</dependency>
+
+mvn package		打包
+
+Linux 创建服务
+ln -s /var/apps/demo-2-jap-0.0.1-SNAPSHOT.jar /etc/init.d/myapp 	创建一个软链接到 /etc/init.d/ 目录下
+	service myapp start
+	service myapp stop 
+	service myapp status
+	chkconfig myapp on 		开机启动
+	/var/log/myapp.log		日志
+
+在 /etc/systemd/system/ 目录下新建文件 javaapp.service 并输入以下内容
+[Unit]
+Description=javaapp
+After=syslog.target
+
+[Service]
+ExecStart=/usr/bin/java -jar /var/apps/demo-2-jpa-0.0.1-SNAPSHOT.jar
+
+[Install]
+WantedBy=multi-user.target
+
+systemctl start javaapp 或 systemctl start javaapp.service 启动服务
+systemctl status javaapp 	服务状态
+systemctl enable javaapp 开机启动
+journalctl -u javaapp 日志
+
+Actuator
+	management.endpoints.web.exposure.include=*			开启所有端点
+	使用 info 定制公开端信息
+	info:
+		app:
+			name: test
+			version: 1.0.0
+	localhost:8000/info  则
+		显示 app 内容			
+
+SpringCloud
+	ConfigServer												//	配置服务
+		@EnableConfigServer
+	Eureka
+		@EnableEurekaServer
+		@EnableEurekaClient
+	Zuul														// 路由
+		@EnableZuulProxy
+	CircuitBreaker												// 断路器
+		@HystrixCommand
+		@EnableHystrixDashboard									// 	开启断路器控制台
+
+断路器
+@CircuitBreaker	
+	启动类添加 @EnableCircuitBreaker 或 @EnableHystrix 提供断路器支持
+
+Zuul
+
+java -Xms2048m -Xmx2048m -jar xxx.jar --server.port=8088		替换 application.xml 中的 server.port=8080
+
+AMQP Advanced Message Queuing Protocol     一个提供统一消息服务的应用层标准 高级消息队列协议
+RabbitMQ 是 AMQP 的开源实现
+ActiveMQ(JMS)
+
+发送消息到 RabbitMQ 服务器
+	@Autowired
+	RabbitTemplate rabbitTemplate;
+
+	@Bean
+	public Queue wiselyQueue() {
+		return new Queue("myqueue");
+	}
+
+	@Scheduled(fixedDelay=10000)
+	public void sendTask() {
+		List<Employee> all = empRepository.findAll();
+		rabbitTemplate.convertAndSend("myqueue",all);
+		System.out.println("sended");
+	}	
+
+从 RabbitMQ 接收消息
+	@RabbitListener(queues = "myqueue")
+	void receiver(List<Employee> emps) {
+		System.out.println(emps);
+	}	
+
+crontab 计划任务	
+export PATH = 添加环境变量
+export 查看环境变量
+echo $PATH
+
+
+
+RestTemplate   请求微服务
+
+	@Bean
+	@LoadBalanced							// 整合 Ribbon ， restTemplate 将使用 Ribbon 负载均衡
+	public RestTemplate restTemplate(){
+		return new RestTemplate();
+	}
+
+	@Autowired
+	private RestTemplate restTemplate;
+
+	restTemplate.getForObject("localhost" + id , User.class)	// 具有负载均衡
+
+	@Autowired
+	LoadBalancerClient balanceClient;		// 负载均衡客户端
+
+Ribbon 客户端负载均衡
+Feign 声明式 API 调用
+Hystrix 容错
+
+
+Feign
+	@FeignClient(name="microsoft-person", configuration = FeignCongiguration.class)
+	public interface UserFeignClient{
+		@RequestMapping(value="/emp",method=RequestMethod.GET)
+		public User findById(@RequestParam("id") Long id);
+	}
+
+
+
+Eureka Server	
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false								// 是否将自己注册到 Eureka Server, 默认为 true
+    fetch-registry: false									// 是否从 Eureka Server 同步注册信息， 默认为 true 
+    service-url:
+      defaultZone: http://localhost:8761/eureka/			// 与 Eureka Server 交互的地址, 默认为 http://localhost:8761/eureka/ 多个用逗号隔开
+
+Eureka client
+@EnableEurekaClient 	是 spring-cloud-netflix 的注解
+@EnableDiscoveryClient 是 spring cloud commons 的注解 支持多种服务发现组件 Zookeeper, Consul 等
+
+eureka:
+  instance:
+    prefer-ip-address: true		
+  client:
+    service-url:
+      defaultZone: http://${eureka.host:localhost}:${eureka.port:8761}/eureka/
+
+
+yum makecache fast
+yum install -y yum-utils device-mapper-persistent-data lvm2

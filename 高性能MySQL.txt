@@ -1,0 +1,210 @@
+hint                优化器
+explain             解释    
+shared lock         共享锁
+exclusive lock      排他锁
+read lock / write lock
+row-level lock
+table-lock
+isolation  level
+dirty read
+nonrepeatable read
+phantom read
+phantom row
+MVCC Multiversion Concurrency Control           多版本并发控制
+Write-Ahead Logging                             预写式日志
+DDL Data Definition Language
+two-phase locking protocol                      两阶段锁定协议
+short-lived                                     短期
+building index by sorting                       排序创建索引
+next-key locking                                间隙锁
+secondary index                                 
+adaptive hash index
+insert buffer
+Delayed Key Write                               延迟更新索引键
+in-memory key buffer                            内存键缓冲区
+segment                                         段 
+key catch                                       索引键缓冲区
+lookup / mapping                                查找 / 映射
+periodically aggregated data                    周期性聚合数据
+Fractal Trees                                   分形树
+append-only copyon-write B-Tree                 只所加写时复制 B 树
+quasi-index                                     准索引 
+shard                                           分片
+Flat File                                       平面文件
+killer feature                                  关键特性
+semisynchronous replication                     半同步复制
+thread pooling
+buffer pool
+CPU-bound                                       CPU 密集型
+GA Generally Available
+
+
+
+
+
+
+
+事务：
+
+START TRANSACTION;
+    事务
+COMMIT;
+
+ACID:
+    atomicity
+    consistency
+    isolation
+        READ UNCOMMITED
+        READ COMMITED
+        REPEATABLE READ
+        SERIALIZABLE
+    durability
+
+自动提交：
+
+SHOW VARIABLES AUTOCOMMIT LIKE 'AUTOCOMMIT';   
+SET AUTOCOMMIT = 0;
+
+设置当前会话事务隔离级别
+SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITED;
+
+获得锁(innoDB)
+SELECT ... LOCK IN SHARE MODE
+SELECT ... FOR UPDATE
+LOCK TABLES / UNLOCK TABLES 
+
+锁：
+    optimistic
+    pessimistic
+
+查看表信息
+    SHOW TABLE STATUS LIKE 'user' /G
+    INFOMATION_SCHEMA
+
+转换表引擎：
+CREATE TABLE innodb_table LIKE myisam_table;
+ALTER TABLE innodb_table ENGINE=innoDB;
+INSERT INTO innodb_table SELECT * FROM myisam_table;
+
+START TRANSACTION;
+INSERT INTO innodb_table SELECT * FROM myisam_table WHERE id BETWEEN x AND y;
+
+
+
+
+第四章
+
+whole number                        
+real bumber
+identifier column               标识列
+Change Data Capture             变更数据抓取
+
+
+
+
+
+
+整数类型
+    TINYINT,    SMALLINT,   MEDIUMINT,  INT,    BIGINT
+    TINYINT -128-127,   TINYINT UNSIGNED 0-255  UNSIGNED 表示不允许负数，可使正数的上限在致提高一倍
+实数类型
+    FLOAT,  DOUBLE, DECIMAL
+字符串类型
+    VARCHAR,    CHAR
+    BLOB/TEXT                   分别采用二进制/字符存储
+    TINYTEXT,   SMALLTEXT,  TEXT,   MEDIUMTEXT, LONGTEXT
+    TINYBLOB,   SMALLBLOB,  BLOB,   MEDIUMBLOB, LONGBLOB
+    MEDIUMBLOB/BLOB,    MEDIUMTEXT/TEXT 它们是同义词
+
+CONCAT(str1,str2)
+CONCAT(LEFT(NOW(),14),'00:00') - INTERVAL 23 HOUR,
+SUBSTRING(column,length)
+MD5(),  SHA1(), UUID(), INET_ATON(),    INET_NTOA()             IP 地址转换成 32 位无符号数, MD5、SHA1 返回的是字符
+CRC32() 返回 32 位整数
+
+DROP TABLE IF EXISTS test3    // 如果存在 test3 就删除
+RENAME TABLE test3 TO table3
+CREATE TABLE table1 LIKE table3   // 创建相似的表
+CREATE TABLE test1(id INT UNSIGNED NOT NULL,PRIMARY KEY(id))
+
+时间
+    DATETIME,   TIMESTAMP   尽量使用 TIMESTAMP ,这两个时间精度都是秒。 如要精确到毫秒可以用 BIGINT
+    DATE 精确到天
+MySQL 物化视图 flexviews 
+
+计数器表
+每天开始一个新的计数器
+CREATE TABLE daily_hit_counter(
+	day date NOT NULL,
+	slot TINYINT UNSIGNED NOT NULL,
+	cnt INT UNSIGNED NOT NULL,
+	PRIMARY KEY(day,slot)
+)
+
+INSERT INTO daily_hit_counter(day,slot,cnt) VALUES(
+	CURRENT_DATE,
+	CEIL(RAND() * 3),
+	1
+)
+ON DUPLICATE KEY UPDATE cnt  = cnt + 1      // 如果day,slot 重复则执行更新语句，返回影响行数 2，如果 day,slot不重担则执行插入语句返回影响行数 1
+
+SELECT SUM(cnt) FROM daily_hit_counter      //查询计数器
+
+HAVING: 在 GROUP BY 后面使用聚合函数作为条件
+SELECT SUM(cnt),day FROM daily_hit_counter
+GROUP BY day
+HAVING SUM(cnt) > 30
+
+USING: 相当于 JOIN 中的 ON
+
+归并计数器到 0 号插槽
+UPDATE daily_hit_counter AS c 
+	INNER JOIN (
+		SELECT day, SUM(cnt) AS cnt, MIN(slot) AS mslot
+		FROM daily_hit_counter
+		GROUP BY day
+	) AS x USING(day)
+SET c.cnt  = IF(c.slot = x.mslot, x.cnt, 0),
+		c.slot = IF(c.slot = x.mslot, 0, c.slot);
+
+
+
+第 5 章 索引
+
+    adaptive hash index             自适应 hash 索引，默认开启
+    mysql中每个表都有一个聚簇索引（clustered index ），除此之外的表上的每个非聚簇索引都是二级索引，又叫辅助索引（secondary indexes）。
+    以InnoDB来说，每个InnoDB表具有一个特殊的索引称为聚集索引。如果您的表上定义有主键，该主键索引是聚集索引。如果你不定义为您的表的主键时，
+    MySQL取第一个唯一索引（unique）而且只含非空列（NOT NULL）作为主键，InnoDB使用它作为聚集索引。如果没有这样的列，InnoDB就自己产生一个这样的ID值，
+    它有六个字节，而且是隐藏的，使其作为聚簇索引。
+
+    聚簇索引并不是一种单独的索引，而是一一种数据存储方式
+
+    使用 自增整数作为聚簇索引比 UUID 好， UUID 索引插入时间长，占用空间大
+
+    范围列后面无法使用其它的索引列
+
+    B-Tree
+    hash
+
+
+Handler Object                          句柄对象
+
+MySQL 分区字段必需在主键中， 如 id 是主键 分区字段是 creationDate 则需与 id 形成联合主键
+
+CONCAT()
+SELECT e.emp_name, GROUP_CONCAT(CONCAT_WS(':',e.emp_id,e.dept_id) ORDER BY e.emp_id SEPARATOR '-') FROM employee e GROUP BY e.emp_name
+SELECT GROUP_CONCAT(e.emp_id) FROM employee e    // 连接列
+SELECT FIND_IN_SET('b','a,b,c,d')   // 返回 2
+
+// 查找 rootId 下的所有子节点 返回值和变量必须指定长度
+CREATE FUNCTION getChildIds(rootId INT) RETURNS VARCHAR(1000)
+BEGIN
+	DECLARE childIds VARCHAR(1000) DEFAULT '$';
+	DECLARE ids VARCHAR(1000) ;
+	SET ids = CAST(rootId AS CHAR);
+	WHILE ids IS NOT NULL DO
+		SET childIds = CONCAT(childIds,',',ids);
+		SELECT GROUP_CONCAT(e.emp_id) INTO ids FROM employee e WHERE FIND_IN_SET(e.p_id,ids);
+	END WHILE;
+	RETURN childIds;
+END
