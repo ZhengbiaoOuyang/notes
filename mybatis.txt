@@ -8,6 +8,7 @@ log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 mybatis:
   mapper-locations: classpath:mapper/*.xml          // mapper 的位置
   type-aliases-package: com.example.demo.entity     // 实体在 mapper.xml 中不用写包名
+  map-underscore-to-camel-case: true                // 数据库的下划线命名自动与 JavaBean 的驼峰命名映射 userName  ->  user_name
 
 
 @MapperScan({"package1","package2"})    // 扫描指定的包，这样就不用在 Mapper 接口上面写 @Mapper 注解了， 不用此注解则需要在 Mapper 接口上加上 @Mapper 注解
