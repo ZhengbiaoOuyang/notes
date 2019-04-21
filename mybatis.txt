@@ -1,0 +1,17 @@
+通过日志打印 sql 语句 level 的值为包名
+logging:
+  level:
+    com.example.demo.mapper: DEBUG
+方法二
+log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml          // mapper 的位置
+  type-aliases-package: com.example.demo.entity     // 实体在 mapper.xml 中不用写包名
+
+
+@MapperScan({"package1","package2"})    // 扫描指定的包，这样就不用在 Mapper 接口上面写 @Mapper 注解了， 不用此注解则需要在 Mapper 接口上加上 @Mapper 注解
+
+mybatis 开发
+  1、编写 mapper 接口
+  2、编写 mapper.xml
