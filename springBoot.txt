@@ -410,3 +410,8 @@ eureka:
 
 yum makecache fast
 yum install -y yum-utils device-mapper-persistent-data lvm2
+
+AnnotationConfigServletWebServerApplicationContext
+
+定时器
+ThreadPoolTaskScheduler.schedule()方法会创建一个定时计划ScheduledFuture，在这个方法需要添加两个参数，Runnable（线程接口类） 和CronTrigger（定时任务触发器）
