@@ -1,0 +1,16 @@
+容器
+    FileSystemXmlApplicationContext
+    ClassPathXmlApplicationContext
+    XmlBeanFactory  
+        XmlBeanDefinitionReader
+    DefaultListableBeanFactory
+读取 Xml
+    Resource
+        AbstractResource
+            ClassPathResource
+            FileSystemResource
+ClassPathResource res = new ClassPathResource("beans.Xml");
+DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
+XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
+reader.loadBeanDefinitions(res);        
+
