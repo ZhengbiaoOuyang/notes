@@ -1,0 +1,181 @@
+减少上下文切换的方法有无锁并发编程、CAS算法、使用最少线程和使用协程
+锁级别从低到高依次是：无锁状态、偏向锁状态、轻量级锁状
+态和重量级锁状态
+
+CAS原子操作
+Java 共享内存模型（JMM）
+指令级并行技术（Instruction-Level Parallelism，ILP）
+重排序可能会导致多线程程序 出现内存可见性问题
+
+happens-before关系：happens-before仅仅要求前一个操作（执行的结果）对后一个操作可见 （禁止重排序）
+
+重排序是指编译器和处理器为了优化程序性能而对指令序列进行重新排序的一种手段
+
+as-if-serial语义的意思是：不管怎么重排序（编译器和处理器为了提高并行度），（单线程） 程序的执行结果不能被改变
+
+在当前线程把写过的数据缓存在本地内存中，在没有刷新到主内存之前，这个写操作仅对当前线程可见；从其他线程的角度来观
+察，会认为这个写操作根本没有被当前线程执行。
+
+顺序一致性模型保证单线程内的操作会按程序的顺序执行，而JMM不保证单线程内的
+操作会按程序的顺序执行（比如上面正确同步的多线程程序在临界区内的重排序）
+
+JMM不保证对64位的long型和double型变量的写操作具有原子性，而顺序一致性模型保 证对所有的内存读/写操作都具有原子性
+
+前文提到过重排序分为编译器重排序和处理器重排序。为了实现volatile内存语义，JMM 会分别限制这两种类型的重排序类型
+
+线程A释放锁，随后线程B获取这个锁，这个过程实质上是线程A通过主内存向线程B发
+送消息。
+
+在ReentrantLock中，调用lock()方法获取锁；调用unlock()方法释放锁。
+ReentrantLock的实现依赖于Java同步器框架AbstractQueuedSynchronizer（本文简称之为 AQS）
+
+由于Java的CAS同时具有volatile读和volatile写的内存语义，因此Java线程之间的通信现 在有了下面4种方式。
+1）A线程写volatile变量，随后B线程读这个volatile变量。
+2）A线程写volatile变量，随后B线程用CAS更新这个volatile变量。
+3）A线程用CAS更新一个volatile变量，随后B线程用CAS更新这个volatile变量。
+4）A线程用CAS更新一个volatile变量，随后B线程读这个volatile变量。
+
+1）如果一个操作happens-before另一个操作，那么第一个操作的执行结果将对第二个操作
+可见，而且第一个操作的执行顺序排在第二个操作之前。
+2）两个操作之间存在happens-before关系，并不意味着Java平台的具体实现必须要按照 happens-before关系指定的顺序来执行。如果重排序之后的执行结果，与按happens-before关系 来执行的结果一致，那么这种重排序并不非法（也就是说，JMM允许这种重排序）。
+上面的1）是JMM对程序员的承诺。从程序员的角度来说，可以这样理解happens-before关 系：如果A happens-before B，那么Java内存模型将向程序员保证——A操作的结果将对B可见， 且A的执行顺序排在B之前。注意，这只是Java内存模型向程序员做出的保证！
+上面的2）是JMM对编译器和处理器重排序的约束原则。正如前面所言，JMM其实是在遵
+循一个基本原则：只要不改变程序的执行结果（指的是单线程程序和正确同步的多线程程序），
+编译器和处理器怎么优化都行。JMM这么做的原因是：程序员对于这两个操作是否真的被重
+排序并不关心，程序员关心的是程序执行时的语义不能被改变（即执行结果不能被改变）。因 此，happens-before关系本质上和as-if-serial语义是一回事。
+·as-if-serial语义保证单线程内程序的执行结果不被改变，happens-before关系保证正确同
+步的多线程程序的执行结果不被改变。
+
+初始化一个类，包括执行这个类的静态初始化和初始化在这个类中声明的静态字段。根 据Java语言规范，在首次发生下列任意一种情况时，一个类或接口类型T将被立即初始化。
+1）T是一个类，而且一个T类型的实例被创建。
+2）T是一个类，且T中声明的一个静态方法被调用。
+3）T中声明的一个静态字段被赋值。
+4）T中声明的一个静态字段被使用，而且这个字段不是一个常量字段。
+5）T是一个顶级类（Top Level Class，见Java语言规范的§7.6），而且一个断言语句嵌套在T内部被执行。
+
+单例模式：
+基于volatile的双重检查锁定的方案和基于类初始化的方案
+
+jps : 查看 Java 进程 ID  （JavaVirtual Machine Process Status Tool）
+
+关键字volatile可以用来修饰字段（成员变量），就是告知程序任何对该变量的访问均需要
+从共享内存中获取，而对它的改变必须同步刷新回共享内存，它能保证所有线程对变量访问
+的可见性。
+
+关键字synchronized可以修饰方法或者以同步块的形式来进行使用，它主要确保多个线程
+在同一个时刻，只能有一个线程处于方法或者同步块中，它保证了线程对变量访问的可见性
+和排他性。
+
+等待/通知机制，是指一个线程A调用了对象O的wait()方法进入等待状态，而另一个线程B 调用了对象O的notify()或者notifyAll()方法，线程A收到通知后从对象O的wait()方法返回，进而 执行后续操作。上述两个线程通过对象O来完成交互，而对象上的wait()和notify/notifyAll()的
+关系就如同开关信号一样，用来完成等待方和通知方之间的交互工作。
+
+
+调用wait()、notify()以 及notifyAll()时需要注意的细节，如下。
+1）使用wait()、notify()和notifyAll()时需要先对调用对象加锁。
+2）调用wait()方法后，线程状态由RUNNING变为WAITING，并将当前线程放置到对象的
+等待队列。
+3）notify()或notifyAll()方法调用后，等待线程依旧不会从wait()返回，需要调用notify()或 notifAll()的线程释放锁之后，等待线程才有机会从wait()返回。
+4）notify()方法将等待队列中的一个等待线程从等待队列中移到同步队列中，而notifyAll() 方法则是将等待队列中所有的线程全部移到同步队列，被移动的线程状态由WAITING变为 BLOCKED。
+5）从wait()方法返回的前提是获得了调用对象的锁。
+
+等待/通知的经典范式
+synchronized(对象) {       
+    while(条件不满足) {              
+        对象.wait();       
+    }       
+    对应的处理逻辑 
+}
+synchronized(对象) {       
+    改变条件       
+    对象.notifyAll(); 
+}
+
+lock 的使用方式
+Lock lock = new ReentrantLock(); 
+lock.lock(); 
+try { } 
+finally {    
+    lock.unlock(); 
+}
+
+Lock接口提供的synchronized关键字不具备的主要特性
+    尝试费阻塞获取锁
+    能中断获取锁
+    超时获取锁
+
+队列同步器AbstractQueuedSynchronizer（以下简称同步器）    
+
+同步组件
+    ReentrantLock
+    ReentrantReadWriteLock (读写锁)
+    CountDownLatch
+
+可重入锁：
+    ReentrantLock
+    Segment
+
+节点是构成同步队列（等待队列，在5.6节中将会介绍）的基础，同步器拥有首节点（head） 和尾节点（tail），没有成功获取同步状态的线程将会成为节点加入该队列的尾部，同步队列的 基本结构如图5-1所示。
+
+自定义锁：
+    1，实现 lock 接口
+    2，实现类中实现一个同步器， 一般为匿名内部类 Sync ，需继承 AbstractQueuedSynchronizer 
+
+共享锁/独占锁
+
+重入锁：不会自己阻塞自己
+
+排他锁 ReentrantLock
+
+
+锁的获取： 等待/自旋
+自旋，在死循环中不停的偿试获取锁
+
+共享式访问资源时，其他共享式的访问均被允许，而独占式访问被
+阻塞，右半部分是独占式访问资源时，同一时刻其他访问均被阻塞。
+
+
+一般情况下，读写锁的性能都会比排它锁好
+
+Java并发包提供读写锁的实现是 ReentrantReadWriteLock
+写锁是一个支持重进入的排它锁
+如果存在读锁，则写锁不能被获取，而写锁一旦被获取，则其他读写线程的后续访问均被阻塞。
+读锁是一个支持重进入的共享锁，它能够被多个线程同时获取，在没有其他写线程访问 （或者写状态为0）时，读锁总会被成功地获取
+
+读写锁示例
+public class Cache {	
+
+	private static final Map<String, Object> map = new HashMap<>(16);	
+	private static ReadWriteLock rwl = new ReentrantReadWriteLock();	
+	private static Lock r = rwl.readLock();	
+	private static Lock w = rwl.writeLock();
+	
+	public static Object put(String key, Object value) {
+		// 获取写锁
+		w.lock();
+		try {
+			return map.put(key, value);
+		} finally {
+			w.unlock();
+		}
+	}
+	
+	public Object get(String key) {
+		// 获取读锁
+		r.lock();
+		try {
+			return map.get(key);
+		} finally {
+			// 释放读锁
+			r.unlock();
+		}
+	}
+}
+上述示例中，Cache组合一个非线程安全的HashMap作为缓存的实现，同时使用读写锁的 读锁和写锁来保证Cache是线程安全的。在读操作get(String key)方法中，需要获取读锁，
+这使得并发访问该方法时不会被阻塞。写操作put(String key,Object value)方法和clear()方法，在更新 HashMap时必须提前获取写锁，当获取写锁后，其他线程对于读锁和写锁的获取均被阻塞，
+而 只有写锁被释放之后，其他读写操作才能继续。Cache使用读写锁提升读操作的并发性，也保证每次写操作对所有的读写操作的可见性，同时简化了编程方式。
+
+
+ConcurrentLinkedQueue   线程安全的队列 使用 CAS 非阻塞方式实现
+ConcurrentHashMap   线程安全的 HashMap 锁分段技术
+    HashTable 线程安全
+    HashMap 线程不安全
