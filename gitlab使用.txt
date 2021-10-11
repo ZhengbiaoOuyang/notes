@@ -1,0 +1,56 @@
+安装教程
+https://blog.csdn.net/weixin_43767602/article/details/84568858
+https://blog.csdn.net/qq_41363057/article/details/115566244
+
+gitlab中文文档
+https://www.bookstack.cn/read/gitlab-doc-zh/docs-002.md
+
+gitlab修改密码，不会报错: ERROR: "rails console" was called with arguments ["production"]
+https://www.codingone.top/archives/110
+
+常见报错解决办法
+
+SSL certificate problem: self signed certificat
+问题原因：需要client配置忽略https证书检验
+解决方案：打开Git Bash运行如下命令
+export GIT_SSL_NO_VERIFY=true
+git config --global http.sslVerify "false"
+
+
+ VMware Workstation 10.0.4 
+官方直链下载
+https://download3.vmware.com/software/wkst/file/VMware-workstation-full-10.0.0-1295980.exe
+序列号
+0F63E-20HEM-4ZC49-RKC5M-A22HY
+4F2A2-ARHEK-MZJJ0-JH8EH-C2GQG
+1U64X-AA351-KZ519-4R85M-A2KJR
+HU03A-F83EM-9Z7L8-LT974-3CE7V
+1A46W-AHL9H-FZ7Z8-ETC50-0CK4P
+1U2WF-64K91-EZQU9-T195H-0A34K
+JZ2Q8-DZJ5L-VZWG8-ZH0NH-A3ZNR
+NU4KA-48JDM-LZUV9-3J27P-AAJLZ
+NU0FD-0C10L-UZJ48-U18XK-2AX4J
+1Z01F-2FL11-RZUU8-ZV254-12CP0
+
+访问地址
+http://10.89.103.46:8083/gitlab/
+
+网卡配置
+https://blog.csdn.net/qq_41403219/article/details/107142720
+
+ip addr
+没有看到IP地址， 说明没有启用网卡
+
+进入/etc/sysconfig/network-scripts/目录下，查看网卡配置文件ifcfg-eno16777736
+将ONBOOT设置为yes，保存退出
+然后重启网络ifup eno16777736
+
+安装net-tools：yum install net-tools
+安装成功后即可以使用 ifconfig
+
+curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | bash
+
+EXTERNAL_URL="https://192.168.19.128:8083/gitlab" yum install -y gitlab-ce
+
+gitlab rpm 包下载
+https://packages.gitlab.com/gitlab/gitlab-ce
