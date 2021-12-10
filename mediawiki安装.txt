@@ -1,0 +1,14 @@
+安装教程
+http://www.vue5.com/centos/23086.html
+
+search permissions are missing on a component of the path
+https://blog.csdn.net/wingrez/article/details/99769843
+
+
+安装 php74 yum源可能需要翻墙
+https://www.ywnz.com/linuxjc/5923.html
+安装以下包
+yum install php php-apcu php-intl php-mbstring php-xml php-mysql mariadb-server apache2
+
+https://www.it610.com/article/1291956353941708800.htm
+

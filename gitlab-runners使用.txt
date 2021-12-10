@@ -1,0 +1,14 @@
+gitlab-runners 安装
+https://www.cnblogs.com/suyuanli/p/14320502.html
+
+gitlab-runners 常用命令
+https://www.cnblogs.com/dhu121/p/13257256.html
+
+【转】gitlab CI流水线配置文件.gitlab-ci.yml详解
+https://www.cnblogs.com/wangshuyang/p/14110065.html
+
+
+
+# 执行下面命令注册服务, 否则找不到命令
+./gitlab-runner.ele install -user ".\ENTER-YOUR-USERNAME" --password "ENTER-YOUR-PASSWORD"
+./gitlab-runner.ele install -user ".\admin" --password "abcd+1234"

@@ -1,0 +1,30 @@
+下载
+开发
+https://nmp.dgcb.com.cn:8080/mmp/ares/file/billVideoDownload.do?filepath=/export/data/MMP/01package&imagepath=/12.7z
+
+sit
+https://nmp.dgcb.com.cn:18080/mmp/ares/file/billVideoDownload.do?filepath=/export/data/MMP/01package&imagepath=/Video.rar
+
+
+https://nmp.dgcb.com.cn:8080/mmp/ares/file/billVideoDownload.do?filepath=/export/data/MMP/01package&imagepath=/Videos.rar
+
+
+客户端打包命令
+./gradlew clean buildRelease
+
+
+https://nmp.dgcb.com.cn:8080/gitlab/mmp/web.git
+
+// 切换仓库
+git remote set-url origin http://10.31.2.36:8083/gitlab/mmp/web.git
+
+https://zhuanlan.zhihu.com/p/286815739
+https://blog.csdn.net/u012223913/article/details/121271957  redirector
+
+
+Main-Class: demo.SendFile
+
+需要用户认证或者URL不存在
+
+文件服务
+C:\Users\Shinelon\workspace\demo\target

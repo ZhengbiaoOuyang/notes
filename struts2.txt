@@ -1,3 +1,0 @@
-零配置：
-http://pzmayf.iteye.com/blog/415826
-或 使用 struts2 convention

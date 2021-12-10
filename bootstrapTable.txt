@@ -1,4 +1,0 @@
-bootstrapTable的 data 只使用有用的字段 ，多余的不使用的字段在 ie8 中可能会造成错误
-
-根据 id 删除
-$("#list_table").data("bootstrap.table").remove({field: 'id', values: [id]})
